@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: administartionservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: administartionservice
+  template:
+    metadata:
+      labels:
+        name: administartionservice
+    spec:
+      containers:
+        - name: application
+          image: okugario/rbadministartionservice:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7614

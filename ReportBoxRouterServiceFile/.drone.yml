@@ -1,0 +1,61 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+clone:
+  disable: true
+
+steps:
+  - name: ssh and deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: 192.168.40.203
+      username:
+        from_secret: ssh_login
+      password:
+        from_secret: ssh_password
+      port: 22
+      command_timeout: 10m
+      script:
+        - echo =========Delete========
+        - cd /opt/Projects
+        - rm -r ReportBoxRouterService
+        - rm -r GoWebStruct
+        - rm -r ReportBoxFrontend
+        - echo =========Clone=======
+        - pwd
+        - cd /opt/Projects
+        - git clone http://192.168.7.70:31644/okugario/ReportBoxRouterService.git
+        - git clone http://192.168.7.70:31644/okugario/GoWebStruct.git
+        - git clone http://192.168.7.70:31644/okugario/ReportBoxFrontend.git
+        - echo =========Build=========
+        - pwd
+        - cd /opt/Projects/ReportBoxRouterService/Static/Js
+        - ls
+        - cd /opt/Projects/ReportBoxFrontend
+        - npm install
+        - webpack
+        - sleep 15
+        - ls
+        - cd /opt/Projects/ReportBoxRouterService
+        - docker build -t okugario/k8s-report:dev .
+        - cd /opt/Projects/ReportBoxRouterService/Static/Js
+        - ls
+        - sleep 15
+        - echo =========Run==========
+        - docker login
+        - echo "$docker_password" | docker login -u "$docker_username" --password-stdin
+        - docker push okugario/k8s-report:dev
+        - echo ========DeleteKube====
+        - kubectl delete service k8s-report
+        - kubectl delete deployment k8s-report
+        - echo =========Done=========
+        - cd /opt/Projects/ReportBoxRouterService
+        - kubectl apply -f deployment.yaml
+        - kubectl apply -f service.yaml
+
+trigger:
+  branch:
+    - main
+  event:
+    - push

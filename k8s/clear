@@ -1,0 +1,8 @@
+#!/bin/bash
+# This is a comment
+systemctl stop docker
+systemctl stop kubelet
+sudo iptables --flush
+sudo iptables -tnat --flush
+systemctl start docker
+systemctl start kubelet
