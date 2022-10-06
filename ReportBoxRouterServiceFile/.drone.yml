@@ -20,14 +20,16 @@ steps:
         - echo =========Delete========
         - cd /opt/Projects
         - rm -r ReportBoxRouterService
-        - rm -r GoWebStruct
+        - echo yes
         - rm -r ReportBoxFrontend
+        - echo yes
         - echo =========Clone=======
         - pwd
         - cd /opt/Projects
+        - pwd
         - git clone http://192.168.7.70:31644/okugario/ReportBoxRouterService.git
-        - git clone http://192.168.7.70:31644/okugario/GoWebStruct.git
         - git clone http://192.168.7.70:31644/okugario/ReportBoxFrontend.git
+        - ls
         - echo =========Build=========
         - pwd
         - cd /opt/Projects/ReportBoxRouterService/Static/Js
@@ -38,17 +40,17 @@ steps:
         - sleep 15
         - ls
         - cd /opt/Projects/ReportBoxRouterService
-        - docker build -t okugario/k8s-report:dev .
+        - docker build -t okugario/report-test:dev .
         - cd /opt/Projects/ReportBoxRouterService/Static/Js
         - ls
         - sleep 15
         - echo =========Run==========
         - docker login
         - echo "$docker_password" | docker login -u "$docker_username" --password-stdin
-        - docker push okugario/k8s-report:dev
+        - docker push okugario/report-test:dev
         - echo ========DeleteKube====
-        - kubectl delete service k8s-report
-        - kubectl delete deployment k8s-report
+        - kubectl delete service report-test
+        - kubectl delete deployment report-test
         - echo =========Done=========
         - cd /opt/Projects/ReportBoxRouterService
         - kubectl apply -f deployment.yaml

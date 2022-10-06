@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-report
+  name: report-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: k8s-report
+      name: report-test
   template:
     metadata:
       labels:
-        name: k8s-report
+        name: report-test
     spec:
       containers:
         - name: application
-          image: okugario/k8s-report:dev
+          image: okugario/report-test:dev
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7613

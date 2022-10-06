@@ -20,26 +20,21 @@ steps:
         - echo =========Delete========
         - cd /opt/Projects
         - rm -r ReportBoxAdministartionService
-        - rm -r GoWebStruct
         - echo =========Clone=======
-        - pwd
-        - cd /opt/Projects
         - git clone http://192.168.7.70:31644/okugario/ReportBoxAdministartionService.git
-        - git clone http://192.168.7.70:31644/okugario/GoWebStruct.git
         - echo =========Build=========
         - cd /opt/Projects/ReportBoxAdministartionService
-        - docker build -t okugario/rbadministartionservice:dev .
+        - docker build -t okugario/reportboxadmin:dev1 .
         - echo =========Run==========
         - docker login
         - echo "$docker_password" | docker login -u "$docker_username" --password-stdin
-        - docker push okugario/rbadministartionservice:dev
+        - docker push okugario/reportboxadmin:dev1
         - echo ========DeleteKube====
-        - kubectl delete service administartionservice
         - kubectl delete deployment administartionservice
         - echo =========Done=========
         - cd /opt/Projects/ReportBoxAdministartionService
-        - kubectl apply -f deployment.yaml
         - kubectl apply -f service.yaml
+        - kubectl apply -f deployment.yaml
 
 trigger:
   branch:
