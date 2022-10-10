@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reportboxrouter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: reportboxrouter
+  template:
+    metadata:
+      labels:
+        name: reportboxrouter
+    spec:
+      containers:
+        - name: application
+          image: mramperage/reportboxrouter:development
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7613

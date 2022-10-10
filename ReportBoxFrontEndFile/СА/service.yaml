@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: reportboxrouter
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 7613
+      nodePort: 30163
+  selector:
+    name: reportboxrouter

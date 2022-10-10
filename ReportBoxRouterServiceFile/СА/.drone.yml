@@ -1,0 +1,63 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+clone:
+  disable: true
+
+steps:
+  - name: ssh and deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: 192.168.40.203
+      username:
+        from_secret: ssh_login
+      password:
+        from_secret: ssh_password
+      port: 22
+      command_timeout: 10m
+      script:
+        - echo =========Delete========
+        - cd /opt/Projects
+        - rm -r ReportBoxRouterService
+        - sleep 5
+        - echo y
+        - sleep 5
+        - echo y
+        - rm -r ReportBoxFrontend
+        - sleep 5
+        - echo y
+        - sleep 5
+        - echo y
+        - ls -a
+        - echo =========Clone=======
+        - cd /opt/Projects
+        - git clone http://192.168.7.70:31644/Mr.Amperage/ReportBoxRouterService.git
+        - cp /opt/Projects/Settings/router/Settings.json /opt/Projects/ReportBoxRouterService/
+        - git clone http://192.168.7.70:31644/Mr.Amperage/ReportBoxFrontend.git
+        - echo =========Build=========
+        - cd /opt/Projects/ReportBoxFrontend
+        - npm install
+        - webpack
+        - sleep 15
+        - cd /opt/Projects/ReportBoxRouterService
+        - docker build -t mramperage/reportboxrouter:development .
+        - cd /opt/Projects/ReportBoxRouterService/Static/Js
+        - sleep 15
+        - echo =========Run==========
+        - docker login
+        - echo "$docker_password" | docker login -u "$docker_user" --password-stdin
+        - docker push mramperage/reportboxrouter:development
+        - echo ========DeleteKube====
+        - kubectl delete service reportboxrouter
+        - kubectl delete deployment reportboxrouter
+        - echo =========Done=========
+        - cd /opt/Projects/ReportBoxRouterService
+        - kubectl apply -f deployment.yaml
+        - kubectl apply -f service.yaml
+
+trigger:
+  branch:
+    - main
+  event:
+    - push
